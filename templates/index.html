@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mero Allotment</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div class="hero-topbar">
+        <div class="eyebrow">Mero Allotment</div>
+        <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle color theme">
+          <span class="theme-toggle-label">Theme</span>
+          <span class="theme-toggle-state" id="themeToggleState">Dark</span>
+        </button>
+      </div>
+      <h1>Save BOIDs once, keep them close, and check your IPOs from a homely corner.</h1>
+      <p>
+        Your BOIDs, always within reach.
+      </p>
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <section class="alerts">
+          {% for category, message in messages %}
+            <div class="alert {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </section>
+      {% endif %}
+    {% endwith %}
+
+    <main class="grid">
+      <section class="card accent-card">
+        <div class="card-header">
+          <h2>Save a BOID</h2>
+          <p>Keep each BOID with a clear label, like how you keep important papers in one familiar drawer. It stays with this browser.</p>
+        </div>
+        <form action="{{ url_for('create_boid') }}" method="post" class="stacked-form">
+          <label>
+            Label
+            <input type="text" name="label" placeholder="Example: Family BOID" required>
+          </label>
+          <label>
+            BOID
+            <input type="text" name="boid" inputmode="numeric" maxlength="16" placeholder="16-digit BOID" required>
+          </label>
+          <button type="submit">Save BOID</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>Saved BOIDs</h2>
+          <p>Select the IDs you want to check, like picking the right key from a familiar hook.</p>
+        </div>
+
+        {% if edit_boid %}
+          <div class="edit-panel">
+            <div class="card-header">
+              <h2>Edit BOID</h2>
+              <p>Update the label or BOID, then keep the list neat and easy to return to.</p>
+            </div>
+            <form action="{{ url_for('update_boid', boid_id=edit_boid.id) }}" method="post" class="stacked-form">
+              <label>
+                Label
+                <input type="text" name="label" value="{{ edit_boid.label }}" required>
+              </label>
+              <label>
+                BOID
+                <input type="text" name="boid" inputmode="numeric" maxlength="16" value="{{ edit_boid.boid }}" required>
+              </label>
+              <div class="inline-actions">
+                <button type="submit">Update BOID</button>
+                <a class="ghost-link" href="{{ url_for('index') }}">Cancel</a>
+              </div>
+            </form>
+          </div>
+        {% endif %}
+
+        {% if boids %}
+          <form action="{{ url_for('check') }}" method="post" class="stacked-form check-form">
+            <label>
+              IPO company
+              <select name="company_id" required>
+                <option value="">Choose a company</option>
+                {% for company in companies %}
+                  <option value="{{ company.id }}" {% if selected_company_id == company.id %}selected{% endif %}>
+                    {{ company.name }}
+                  </option>
+                {% endfor %}
+              </select>
+            </label>
+
+            <div class="boid-list">
+              {% for boid in boids %}
+                <div class="boid-row">
+                  <label class="boid-meta">
+                    <strong>{{ boid.label }}</strong>
+                    <small>{{ boid.boid }}</small>
+                  </label>
+                  <div class="boid-actions">
+                    <label class="check-label" title="Select this BOID">
+                      <input type="checkbox" name="boid_ids" value="{{ boid.id }}" checked aria-label="Select {{ boid.label }} BOID">
+                    </label>
+                    <a class="ghost-link" href="{{ url_for('index', edit_id=boid.id) }}">Edit</a>
+                    <button type="submit" formaction="{{ url_for('remove_boid', boid_id=boid.id) }}" formmethod="post" formnovalidate class="ghost-button">Remove</button>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+
+            <button type="submit">Check selected BOIDs</button>
+          </form>
+        {% else %}
+          <div class="empty-state">
+            No BOIDs have been saved yet.
+          </div>
+        {% endif %}
+      </section>
+    </main>
+
+    <section class="card results-card">
+      <div class="card-header">
+        <h2>Results</h2>
+        <p>What the checker returned, shown in a calm, easy-to-read way.</p>
+      </div>
+
+      {% if results %}
+        <div class="results-grid">
+          {% for item in results %}
+            <article class="result-item">
+              <div>
+                <strong>{{ item.label }}</strong>
+                <small>{{ item.boid }}</small>
+              </div>
+              <p>{{ item.result }}</p>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          Run a check and your allotment results will appear here.
+        </div>
+      {% endif %}
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      const ownerKey = 'boid-owner-id';
+      const root = document.documentElement;
+      const toggle = document.getElementById('themeToggle');
+      const stateLabel = document.getElementById('themeToggleState');
+      const storageKey = 'ipo-theme';
+
+      function readCookie(name) {
+        const parts = document.cookie ? document.cookie.split('; ') : [];
+        for (let i = 0; i < parts.length; i += 1) {
+          const part = parts[i];
+          if (part.indexOf(name + '=') === 0) {
+            return decodeURIComponent(part.slice(name.length + 1));
+          }
+        }
+        return '';
+      }
+
+      function syncOwnerCookie() {
+        let ownerId = readCookie(ownerKey) || localStorage.getItem(ownerKey);
+
+        if (!ownerId) {
+          ownerId = window.crypto && window.crypto.randomUUID
+            ? window.crypto.randomUUID().replace(/-/g, '')
+            : String(Date.now()) + String(Math.random()).slice(2);
+        }
+
+        localStorage.setItem(ownerKey, ownerId);
+        document.cookie = 'boid_owner_id=' + encodeURIComponent(ownerId) + '; path=/; max-age=31536000; SameSite=Lax';
+      }
+
+      syncOwnerCookie();
+
+      function applyTheme(theme) {
+        root.setAttribute('data-theme', theme);
+        stateLabel.textContent = theme === 'light' ? 'Light' : 'Dark';
+        localStorage.setItem(storageKey, theme);
+      }
+
+      const savedTheme = localStorage.getItem(storageKey);
+      const initialTheme = savedTheme || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      applyTheme(initialTheme);
+
+      toggle.addEventListener('click', function () {
+        const nextTheme = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        applyTheme(nextTheme);
+      });
+    })();
+  </script>
+</body>
+</html>
