@@ -2,14 +2,9 @@ services:
   - type: web
     name: mero-allotment
     env: python
+    plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn --bind 0.0.0.0:$PORT app:app
     envVars:
       - key: IPO_WEB_SECRET
         generateValue: true
-      - key: IPO_DB_PATH
-        value: /var/data/ipo_boids.db
-    disk:
-      name: mero-allotment-data
-      mountPath: /var/data
-      sizeGB: 1
