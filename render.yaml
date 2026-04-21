@@ -7,3 +7,9 @@ services:
     envVars:
       - key: IPO_WEB_SECRET
         generateValue: true
+      - key: IPO_DB_PATH
+        value: /var/data/ipo_boids.db
+    disk:
+      name: mero-allotment-data
+      mountPath: /var/data
+      sizeGB: 1
