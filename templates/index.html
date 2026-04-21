@@ -1,66 +1,71 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mero Allotment</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-  <div class="page-shell">
-    <header class="hero">
-      <div class="hero-topbar">
-        <div class="eyebrow">Mero Allotment</div>
-        <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle color theme">
-          <span class="theme-toggle-label">Theme</span>
-          <span class="theme-toggle-state" id="themeToggleState">Dark</span>
-        </button>
-      </div>
-      <h1>Save BOIDs once, keep them close, and check your IPOs from a homely corner.</h1>
-      <p>
-        Your BOIDs, always within reach.
-      </p>
-    </header>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        <section class="alerts">
-          {% for category, message in messages %}
-            <div class="alert {{ category }}">{{ message }}</div>
-          {% endfor %}
-        </section>
-      {% endif %}
-    {% endwith %}
-
-    <main class="grid">
-      <section class="card accent-card">
-        <div class="card-header">
-          <h2>Save a BOID</h2>
-          <p>Keep each BOID with a clear label, like how you keep important papers in one familiar drawer. It stays with this browser.</p>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mero Allotment</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.svg') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-topbar">
+          <div class="eyebrow">Mero Allotment</div>
+          <div class="topbar-actions">
+            <a href="https://github.com/gaurabxkc/" class="github-link" aria-label="Visit Gaurabxkc on GitHub" target="_blank" rel="noopener noreferrer" title="GitHub Profile">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M12 1C5.924 1 1 5.924 1 12c0 4.86 3.148 8.984 7.513 10.438.55.102.75-.239.75-.53 0-.261-.01-1.131-.015-2.052-3.056.664-3.701-1.296-3.701-1.296-.5-1.27-1.222-1.608-1.222-1.608-.999-.683.076-.669.076-.669 1.105.078 1.686 1.134 1.686 1.134.98 1.68 2.572 1.195 3.199.914.1-.71.384-1.196.699-1.471-2.44-.277-5.005-1.22-5.005-5.431 0-1.2.429-2.181 1.133-2.95-.113-.277-.491-1.394.108-2.906 0 0 .924-.296 3.026 1.127A10.53 10.53 0 0 1 12 6.32a10.53 10.53 0 0 1 2.756.371c2.102-1.423 3.026-1.127 3.026-1.127.599 1.512.221 2.629.108 2.906.704.769 1.133 1.75 1.133 2.95 0 4.222-2.569 5.151-5.016 5.422.395.34.747 1.007.747 2.03 0 1.467-.013 2.649-.013 3.01 0 .294.198.637.756.529C19.856 20.98 23 16.858 23 12c0-6.076-4.924-11-11-11Z" />
+              </svg>
+            </a>
+            <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle color theme">
+              <span class="theme-toggle-label">Theme</span>
+              <span class="theme-toggle-state" id="themeToggleState">Dark</span>
+            </button>
+          </div>
         </div>
-        <form action="{{ url_for('create_boid') }}" method="post" class="stacked-form">
-          <label>
-            Label
-            <input type="text" name="label" placeholder="Example: Family BOID" required>
-          </label>
-          <label>
-            BOID
-            <input type="text" name="boid" inputmode="numeric" maxlength="16" placeholder="16-digit BOID" required>
-          </label>
-          <button type="submit">Save BOID</button>
-        </form>
+        <h1>Paryo ki Parnea?</h1>
+        <p>Bholi ko Crorepati safar starts here.</p>
+      </header>
+
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %}
+      <section class="alerts">
+        {% for category, message in messages %}
+        <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
       </section>
+      {% endif %} {% endwith %}
 
-      <section class="card">
-        <div class="card-header">
-          <h2>Saved BOIDs</h2>
-          <p>Select the IDs you want to check, like picking the right key from a familiar hook.</p>
-        </div>
+      <main class="grid">
+        <section class="card accent-card">
+          <div class="card-header">
+            <h2>Save a BOID</h2>
+            <p>&nbsp;</p>
+          </div>
+          <form action="{{ url_for('create_boid') }}" method="post" class="stacked-form">
+            <label>
+              Label
+              <input type="text" name="label" placeholder="Example: Family BOID" required />
+            </label>
+            <label>
+              BOID
+              <input type="text" name="boid" inputmode="numeric" maxlength="16" placeholder="16-digit BOID" required />
+            </label>
+            <button type="submit">Save BOID</button>
+          </form>
+        </section>
 
-        {% if edit_boid %}
+        <section class="card">
+          <div class="card-header">
+            <h2>Saved BOIDs</h2>
+            <p>Select the IDs you want to check.</p>
+          </div>
+
+          {% if edit_boid %}
           <div class="edit-panel">
             <div class="card-header">
               <h2>Edit BOID</h2>
@@ -69,11 +74,11 @@
             <form action="{{ url_for('update_boid', boid_id=edit_boid.id) }}" method="post" class="stacked-form">
               <label>
                 Label
-                <input type="text" name="label" value="{{ edit_boid.label }}" required>
+                <input type="text" name="label" value="{{ edit_boid.label }}" required />
               </label>
               <label>
                 BOID
-                <input type="text" name="boid" inputmode="numeric" maxlength="16" value="{{ edit_boid.boid }}" required>
+                <input type="text" name="boid" inputmode="numeric" maxlength="16" value="{{ edit_boid.boid }}" required />
               </label>
               <div class="inline-actions">
                 <button type="submit">Update BOID</button>
@@ -81,125 +86,205 @@
               </div>
             </form>
           </div>
-        {% endif %}
-
-        {% if boids %}
+          {% endif %} {% if boids %}
           <form action="{{ url_for('check') }}" method="post" class="stacked-form check-form">
             <label>
               IPO company
               <select name="company_id" required>
                 <option value="">Choose a company</option>
                 {% for company in companies %}
-                  <option value="{{ company.id }}" {% if selected_company_id == company.id %}selected{% endif %}>
-                    {{ company.name }}
-                  </option>
+                <option value="{{ company.id }}" {% if company.id|string in [selected_company_id|string] %}selected{% endif %}>{{ company.name }}</option>
                 {% endfor %}
               </select>
             </label>
 
             <div class="boid-list">
               {% for boid in boids %}
-                <div class="boid-row">
-                  <label class="boid-meta">
-                    <strong>{{ boid.label }}</strong>
-                    <small>{{ boid.boid }}</small>
+              <div class="boid-row">
+                <label class="boid-meta">
+                  <strong>{{ boid.label }}</strong>
+                  <small>{{ boid.boid }}</small>
+                </label>
+                <div class="boid-actions">
+                  <label class="check-label" title="Select this BOID">
+                    <input type="checkbox" name="boid_ids" value="{{ boid.id }}" checked aria-label="Select {{ boid.label }} BOID" />
                   </label>
-                  <div class="boid-actions">
-                    <label class="check-label" title="Select this BOID">
-                      <input type="checkbox" name="boid_ids" value="{{ boid.id }}" checked aria-label="Select {{ boid.label }} BOID">
-                    </label>
-                    <a class="ghost-link" href="{{ url_for('index', edit_id=boid.id) }}">Edit</a>
-                    <button type="submit" formaction="{{ url_for('remove_boid', boid_id=boid.id) }}" formmethod="post" formnovalidate class="ghost-button">Remove</button>
-                  </div>
+                  <a class="ghost-link" href="{{ url_for('index', edit_id=boid.id) }}">Edit</a>
+                  <button type="submit" formaction="{{ url_for('remove_boid', boid_id=boid.id) }}" formmethod="post" formnovalidate class="ghost-button">Remove</button>
                 </div>
+              </div>
               {% endfor %}
             </div>
 
             <button type="submit">Check selected BOIDs</button>
           </form>
-        {% else %}
-          <div class="empty-state">
-            No BOIDs have been saved yet.
-          </div>
-        {% endif %}
-      </section>
-    </main>
+          {% else %}
+          <div class="empty-state">No BOIDs have been saved yet.</div>
+          {% endif %}
+        </section>
+      </main>
 
-    <section class="card results-card">
-      <div class="card-header">
-        <h2>Results</h2>
-        <p>What the checker returned, shown in a calm, easy-to-read way.</p>
-      </div>
+      <section class="card results-card">
+        <div class="card-header">
+          <h2>Results</h2>
+          <p>&nbsp;</p>
+        </div>
 
-      {% if results %}
+        {% if results %}
+        <div class="results-tools">
+          <button type="button" id="playWinSong" class="ghost-button celebration-play" hidden>Play song</button>
+        </div>
         <div class="results-grid">
           {% for item in results %}
-            <article class="result-item">
-              <div>
-                <strong>{{ item.label }}</strong>
-                <small>{{ item.boid }}</small>
-              </div>
-              <p>{{ item.result }}</p>
-            </article>
+          <article class="result-item">
+            <div>
+              <strong>{{ item.label }}</strong>
+              <small>{{ item.boid }}</small>
+            </div>
+            <p>{{ item.result }}</p>
+          </article>
           {% endfor %}
         </div>
-      {% else %}
-        <div class="empty-state">
-          Run a check and your allotment results will appear here.
-        </div>
-      {% endif %}
-    </section>
-  </div>
+        {% else %}
+        <div class="empty-state">Run a check and your allotment results will appear here.</div>
+        {% endif %}
+      </section>
+    </div>
 
-  <script>
-    (function () {
-      const ownerKey = 'boid-owner-id';
-      const root = document.documentElement;
-      const toggle = document.getElementById('themeToggle');
-      const stateLabel = document.getElementById('themeToggleState');
-      const storageKey = 'ipo-theme';
+    <script>
+      (function () {
+        const ownerKey = "boid-owner-id";
+        const root = document.documentElement;
+        const toggle = document.getElementById("themeToggle");
+        const stateLabel = document.getElementById("themeToggleState");
+        const playWinSongButton = document.getElementById("playWinSong");
+        const storageKey = "ipo-theme";
+        const paisaSongs = ["{{ url_for('static', filename='paisa.mp3') }}", "{{ url_for('static', filename='paisa2.mp3') }}", "{{ url_for('static', filename='paisa3.mp3') }}", "{{ url_for('static', filename='paisa4.mp3') }}"];
+        const noPaisaSongs = ["{{ url_for('static', filename='nopaisa.mp3') }}", "{{ url_for('static', filename='nopaisa1.mp3') }}"];
+        const moneySong = new Audio();
+        moneySong.preload = "auto";
+        let currentPlaylist = [];
 
-      function readCookie(name) {
-        const parts = document.cookie ? document.cookie.split('; ') : [];
-        for (let i = 0; i < parts.length; i += 1) {
-          const part = parts[i];
-          if (part.indexOf(name + '=') === 0) {
-            return decodeURIComponent(part.slice(name.length + 1));
+        function readCookie(name) {
+          const parts = document.cookie ? document.cookie.split("; ") : [];
+          for (let i = 0; i < parts.length; i += 1) {
+            const part = parts[i];
+            if (part.indexOf(name + "=") === 0) {
+              return decodeURIComponent(part.slice(name.length + 1));
+            }
           }
-        }
-        return '';
-      }
-
-      function syncOwnerCookie() {
-        let ownerId = readCookie(ownerKey) || localStorage.getItem(ownerKey);
-
-        if (!ownerId) {
-          ownerId = window.crypto && window.crypto.randomUUID
-            ? window.crypto.randomUUID().replace(/-/g, '')
-            : String(Date.now()) + String(Math.random()).slice(2);
+          return "";
         }
 
-        localStorage.setItem(ownerKey, ownerId);
-        document.cookie = 'boid_owner_id=' + encodeURIComponent(ownerId) + '; path=/; max-age=31536000; SameSite=Lax';
-      }
+        function syncOwnerCookie() {
+          let ownerId = readCookie(ownerKey) || localStorage.getItem(ownerKey);
 
-      syncOwnerCookie();
+          if (!ownerId) {
+            ownerId = window.crypto && window.crypto.randomUUID ? window.crypto.randomUUID().replace(/-/g, "") : String(Date.now()) + String(Math.random()).slice(2);
+          }
 
-      function applyTheme(theme) {
-        root.setAttribute('data-theme', theme);
-        stateLabel.textContent = theme === 'light' ? 'Light' : 'Dark';
-        localStorage.setItem(storageKey, theme);
-      }
+          localStorage.setItem(ownerKey, ownerId);
+          document.cookie = "boid_owner_id=" + encodeURIComponent(ownerId) + "; path=/; max-age=31536000; SameSite=Lax";
+        }
 
-      const savedTheme = localStorage.getItem(storageKey);
-      const initialTheme = savedTheme || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-      applyTheme(initialTheme);
+        syncOwnerCookie();
 
-      toggle.addEventListener('click', function () {
-        const nextTheme = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-        applyTheme(nextTheme);
-      });
-    })();
-  </script>
-</body>
+        function applyTheme(theme) {
+          root.setAttribute("data-theme", theme);
+          stateLabel.textContent = theme === "light" ? "Light" : "Dark";
+          localStorage.setItem(storageKey, theme);
+        }
+
+        const savedTheme = localStorage.getItem(storageKey);
+        const initialTheme = savedTheme || (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+        applyTheme(initialTheme);
+
+        toggle.addEventListener("click", function () {
+          const nextTheme = root.getAttribute("data-theme") === "light" ? "dark" : "light";
+          applyTheme(nextTheme);
+        });
+
+        function getResultMood() {
+          const resultNodes = document.querySelectorAll(".result-item p");
+          const positivePattern = /(✅|allotted|alloted|shares\s+allotted)/i;
+          const negativePattern = /(sorry|not\s+allotted|not\s+alloted|no\s+allotment)/i;
+          let hasAnyResult = false;
+
+          for (let i = 0; i < resultNodes.length; i += 1) {
+            hasAnyResult = true;
+            const text = resultNodes[i].textContent || "";
+            if (negativePattern.test(text)) {
+              continue;
+            }
+
+            if (positivePattern.test(text)) {
+              return "paisa";
+            }
+          }
+
+          return hasAnyResult ? "nopaisa" : null;
+        }
+
+        function playMoneyCelebration() {
+          if (moneySong.src && moneySong.paused && !moneySong.ended && moneySong.currentTime > 0 && currentPlaylist.length > 0) {
+            return moneySong.play();
+          }
+
+          if (currentPlaylist.length === 0) {
+            return Promise.reject(new Error("No songs available for this result state"));
+          }
+
+          const randomIndex = Math.floor(Math.random() * currentPlaylist.length);
+          moneySong.src = currentPlaylist[randomIndex];
+          moneySong.currentTime = 0;
+          return moneySong.play();
+        }
+
+        function updateSongToggle() {
+          if (!playWinSongButton) {
+            return;
+          }
+
+          playWinSongButton.textContent = moneySong.paused ? "Play song" : "Pause song";
+        }
+
+        const resultMood = getResultMood();
+        if (resultMood === "paisa") {
+          currentPlaylist = paisaSongs;
+        } else if (resultMood === "nopaisa") {
+          currentPlaylist = noPaisaSongs;
+        }
+
+        if (currentPlaylist.length > 0) {
+          playMoneyCelebration()
+            .catch(function () {
+              updateSongToggle();
+            })
+            .finally(function () {
+              updateSongToggle();
+            });
+        }
+
+        if (playWinSongButton) {
+          moneySong.addEventListener("play", function () {
+            playWinSongButton.hidden = false;
+            updateSongToggle();
+          });
+          moneySong.addEventListener("pause", updateSongToggle);
+          moneySong.addEventListener("ended", updateSongToggle);
+
+          playWinSongButton.addEventListener("click", function () {
+            if (moneySong.paused) {
+              playMoneyCelebration().catch(function () {
+                updateSongToggle();
+              });
+              return;
+            }
+
+            moneySong.pause();
+          });
+        }
+      })();
+    </script>
+  </body>
 </html>

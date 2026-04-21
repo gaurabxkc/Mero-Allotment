@@ -47,11 +47,17 @@ body {
   min-height: 100vh;
   font-family: "JetBrains Mono", monospace;
   color: var(--text);
-  background:
-    radial-gradient(circle at top left, var(--bg-overlay), transparent 33%),
-    radial-gradient(circle at bottom right, rgba(178, 147, 97, 0.18), transparent 30%),
-    linear-gradient(160deg, var(--bg-deep) 0%, var(--bg) 56%, var(--bg-deep) 100%);
-  transition: background 180ms ease, color 180ms ease;
+  background: radial-gradient(circle at top left, var(--bg-overlay), transparent 33%), radial-gradient(circle at bottom right, rgba(178, 147, 97, 0.18), transparent 30%), linear-gradient(160deg, var(--bg-deep) 0%, var(--bg) 56%, var(--bg-deep) 100%);
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+h2 {
+  font-family: "Inter", sans-serif;
+}
+p {
+  font-family: "Poppins", sans-serif;
 }
 
 body::before {
@@ -72,7 +78,6 @@ body::before {
 
 .hero {
   padding: 18px 0 30px;
-  max-width: 820px;
 }
 
 .hero::before {
@@ -93,6 +98,14 @@ body::before {
   gap: 16px;
   flex-wrap: wrap;
   margin-bottom: 14px;
+}
+
+.topbar-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-left: auto;
 }
 
 .eyebrow {
@@ -132,6 +145,39 @@ body::before {
   box-shadow: none;
 }
 
+.github-link {
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--text);
+  background: var(--toggle-bg);
+  transition:
+    background 0.16s ease,
+    border-color 0.16s ease,
+    transform 0.16s ease;
+}
+
+.github-link svg {
+  width: 21px;
+  height: 21px;
+  fill: currentColor;
+}
+
+.github-link:hover {
+  border-color: var(--border-strong);
+  background: var(--toggle-hover);
+  transform: translateY(-1px);
+}
+
+.github-link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(98, 162, 154, 0.2);
+}
+
 .theme-toggle:hover {
   background: var(--toggle-hover);
   transform: none;
@@ -164,7 +210,7 @@ body::before {
   font-size: clamp(2.4rem, 5vw, 4.7rem);
   line-height: 0.98;
   letter-spacing: -0.05em;
-  max-width: 14ch;
+  max-width: 40ch;
 }
 
 .hero p {
@@ -220,7 +266,7 @@ body::before {
 }
 
 .accent-card::before {
-  content: "Saajhako chhaya, sajilo check.";
+  content: "Sajilo check.";
   display: block;
   margin: -4px 0 18px;
   color: var(--accent-warm);
@@ -232,6 +278,17 @@ body::before {
 
 .results-card {
   margin-top: 20px;
+}
+
+.results-tools {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 0 12px;
+}
+
+.celebration-play {
+  min-height: 40px;
+  padding: 8px 12px;
 }
 
 .card-header h2 {
@@ -301,7 +358,10 @@ button {
   font-weight: 800;
   color: var(--bg);
   background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-  transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease,
+    background 0.16s ease;
   box-shadow: 0 16px 30px rgba(50, 116, 92, 0.22);
 }
 
@@ -405,7 +465,10 @@ button:active {
   border: 1px solid transparent;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.03);
-  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+  transition:
+    background 0.16s ease,
+    border-color 0.16s ease,
+    color 0.16s ease;
 }
 
 .check-label:hover {
@@ -426,7 +489,11 @@ button:active {
   display: grid;
   place-content: center;
   cursor: pointer;
-  transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
+  transition:
+    border-color 0.16s ease,
+    background 0.16s ease,
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
 }
 
 .boid-actions input[type="checkbox"]::before {
@@ -436,7 +503,9 @@ button:active {
   border-left: 2px solid transparent;
   border-bottom: 2px solid transparent;
   transform: rotate(-45deg) scale(0.8);
-  transition: border-color 0.16s ease, transform 0.16s ease;
+  transition:
+    border-color 0.16s ease,
+    transform 0.16s ease;
 }
 
 .boid-actions input[type="checkbox"]:checked {
@@ -495,6 +564,15 @@ button:active {
 }
 
 @media (max-width: 700px) {
+  .hero-topbar {
+    align-items: flex-start;
+  }
+
+  .topbar-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
   .page-shell {
     width: min(100% - 20px, 1180px);
     padding-top: 24px;

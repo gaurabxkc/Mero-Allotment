@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: mero-allotment
+    name: meroallotment
     env: python
     plan: free
     buildCommand: pip install -r requirements.txt
