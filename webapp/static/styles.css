@@ -280,6 +280,16 @@ body::before {
   margin-top: 20px;
 }
 
+.running-message {
+  margin: 12px 0 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  font-weight: 600;
+}
+
 .results-tools {
   display: flex;
   justify-content: flex-end;
@@ -379,7 +389,17 @@ button:active {
   gap: 12px;
 }
 
-.boid-row,
+.boid-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 15px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03));
+}
+
 .result-item {
   display: flex;
   align-items: center;
@@ -391,10 +411,47 @@ button:active {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03));
 }
 
-.boid-meta,
-.result-item div {
+.status-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  margin: 0;
+  flex: 0 0 auto;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+.status-dot.allotted {
+  background: #34d399; /* green */
+  box-shadow: 0 6px 18px rgba(52, 211, 153, 0.14);
+}
+.status-dot.not-allotted {
+  background: #ef4444; /* red */
+  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.12);
+}
+.status-dot.unknown {
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: none;
+}
+
+.boid-meta {
   display: grid;
   gap: 4px;
+}
+
+/* Keep result row layout simple and stable. */
+.result-left {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: grid;
+  gap: 4px;
+}
+
+.result-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+  margin-left: 12px;
 }
 
 .boid-meta strong,
@@ -405,6 +462,10 @@ button:active {
 .boid-meta small,
 .result-item small {
   color: var(--muted);
+}
+
+.result-right p {
+  margin: 0;
 }
 
 .boid-actions {
@@ -582,10 +643,46 @@ button:active {
     padding: 18px;
   }
 
-  .boid-row,
-  .result-item {
+  .boid-row {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .result-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "left dot"
+      "result result";
+    align-items: start;
+    width: 100%;
+    column-gap: 12px;
+    row-gap: 8px;
+  }
+
+  .result-left {
+    grid-area: left;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .result-right {
+    display: contents;
+  }
+
+  .result-right p {
+    grid-area: result;
+    margin: 0;
+    text-align: left;
+  }
+
+  .status-dot {
+    grid-area: dot;
+    width: 12px;
+    height: 12px;
+    justify-self: end;
+    align-self: start;
+    margin-top: 0.55rem;
   }
 
   .boid-actions {

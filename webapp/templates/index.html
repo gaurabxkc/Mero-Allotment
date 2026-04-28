@@ -95,6 +95,7 @@
         <div class="results-tools">
           <button type="button" id="playWinSong" class="ghost-button celebration-play" hidden>Play song</button>
         </div>
+        <div id="runningMessage" class="running-message" hidden>Running checks. This can take a little while.</div>
         <div class="results-grid" id="resultsGrid"></div>
         <div class="empty-state" id="resultsEmptyState">Run a check and your allotment results will appear here.</div>
       </section>
@@ -107,6 +108,7 @@
         const stateLabel = document.getElementById("themeToggleState");
         const playWinSongButton = document.getElementById("playWinSong");
         const alerts = document.getElementById("alerts");
+        const runningMessage = document.getElementById("runningMessage");
         const boidForm = document.getElementById("boidForm");
         const saveButton = document.getElementById("saveButton");
         const labelInput = document.getElementById("labelInput");
@@ -258,6 +260,9 @@
           }
 
           resultsEmptyState.hidden = true;
+          if (runningMessage) {
+            runningMessage.hidden = true;
+          }
 
           for (let i = 0; i < results.length; i += 1) {
             const item = results[i];
@@ -265,16 +270,34 @@
             article.className = "result-item";
 
             const left = document.createElement("div");
+            left.className = "result-left";
             const strong = document.createElement("strong");
             strong.textContent = item.label;
             const small = document.createElement("small");
             small.textContent = item.boid;
             left.append(strong, small);
 
+            const right = document.createElement("div");
+            right.className = "result-right";
+
+            const statusDot = document.createElement("span");
+            statusDot.className = "status-dot";
+            const text = (item.result || "").toString();
+            const negativePattern = /(\b(?:not|sorry|no)\b|not\s+allot)/i;
+            const positivePattern = /(\b(?:allotted|alloted|shares\s+allotted|✅)\b)/i;
+            if (negativePattern.test(text)) {
+              statusDot.classList.add("not-allotted");
+            } else if (positivePattern.test(text)) {
+              statusDot.classList.add("allotted");
+            } else {
+              statusDot.classList.add("unknown");
+            }
+
             const p = document.createElement("p");
             p.textContent = item.result;
 
-            article.append(left, p);
+            right.append(p, statusDot);
+            article.append(left, right);
             resultsGrid.appendChild(article);
           }
 
@@ -298,22 +321,43 @@
 
         function appendResult(item) {
           latestResults.push(item);
-          resultsEmptyState.hidden = false;
+          resultsEmptyState.hidden = true;
+          if (runningMessage) {
+            runningMessage.hidden = true;
+          }
 
           const article = document.createElement("article");
           article.className = "result-item";
 
           const left = document.createElement("div");
+          left.className = "result-left";
           const strong = document.createElement("strong");
           strong.textContent = item.label;
           const small = document.createElement("small");
           small.textContent = item.boid;
           left.append(strong, small);
 
+          const right = document.createElement("div");
+          right.className = "result-right";
+
+          const statusDot = document.createElement("span");
+          statusDot.className = "status-dot";
+          const text = (item.result || "").toString();
+          const negativePattern = /(\b(?:not|sorry|no)\b|not\s+allot)/i;
+          const positivePattern = /(\b(?:allotted|alloted|shares\s+allotted|✅)\b)/i;
+          if (negativePattern.test(text)) {
+            statusDot.classList.add("not-allotted");
+          } else if (positivePattern.test(text)) {
+            statusDot.classList.add("allotted");
+          } else {
+            statusDot.classList.add("unknown");
+          }
+
           const p = document.createElement("p");
           p.textContent = item.result;
 
-          article.append(left, p);
+          right.append(p, statusDot);
+          article.append(left, right);
           resultsGrid.appendChild(article);
 
           const mood = getResultMood();
@@ -474,6 +518,9 @@
 
           renderResults([]);
           resultsEmptyState.hidden = false;
+          if (runningMessage) {
+            runningMessage.hidden = false;
+          }
           showAlert("Running checks. This can take a little while.", "success");
 
           try {
@@ -542,9 +589,15 @@
             }
 
             showAlert("Result check completed.", "success");
+            if (runningMessage) {
+              runningMessage.hidden = true;
+            }
           } catch (error) {
             if (latestResults.length === 0) {
               renderResults([]);
+            }
+            if (runningMessage) {
+              runningMessage.hidden = true;
             }
             showAlert((error && error.message) || "Result check failed.", "error");
           } finally {
