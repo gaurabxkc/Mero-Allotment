@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+from io import BytesIO
 import re
 import time
 from functools import lru_cache
@@ -8,6 +9,7 @@ from threading import Lock
 
 import ddddocr
 import requests
+from PIL import Image, ImageEnhance, ImageFilter, ImageOps
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
@@ -23,7 +25,8 @@ HEADERS = {
     "Connection": "keep-alive",
 }
 
-MAX_CAPTCHA_ATTEMPTS = 15
+MAX_CAPTCHA_FETCHES = 15
+CAPTCHA_OCR_VARIANTS = 4
 RETRY_DELAY_SECONDS = 0.1
 BOID_LENGTH = 16
 COMPANY_CACHE_TTL_SECONDS = 120
@@ -92,13 +95,58 @@ def decode_captcha(captcha_b64: str) -> bytes:
     return base64.b64decode(captcha_b64)
 
 
+def _image_to_bytes(image: Image.Image) -> bytes:
+    buffer = BytesIO()
+    image.save(buffer, format="PNG")
+    return buffer.getvalue()
+
+
+def _captcha_variants(image_bytes: bytes) -> list[bytes]:
+    variants = [image_bytes]
+
+    try:
+        with Image.open(BytesIO(image_bytes)) as image:
+            image = ImageOps.exif_transpose(image)
+            grayscale = ImageOps.grayscale(image)
+            normalized = ImageOps.autocontrast(grayscale)
+
+            variants.append(_image_to_bytes(normalized.filter(ImageFilter.SHARPEN)))
+
+            contrasted = ImageEnhance.Contrast(normalized).enhance(1.8)
+            variants.append(_image_to_bytes(contrasted.filter(ImageFilter.SHARPEN)))
+
+            thresholded = normalized.point(lambda pixel: 255 if pixel > 170 else 0)
+            variants.append(_image_to_bytes(thresholded))
+    except Exception:
+        return variants
+
+    deduped: list[bytes] = []
+    seen: set[bytes] = set()
+    for variant in variants:
+        if variant in seen:
+            continue
+        seen.add(variant)
+        deduped.append(variant)
+        if len(deduped) >= CAPTCHA_OCR_VARIANTS:
+            break
+    return deduped
+
+
+def _extract_captcha_digits(ocr: ddddocr.DdddOcr, image_bytes: bytes) -> str:
+    for variant in _captcha_variants(image_bytes):
+        digits = re.sub(r"\D", "", ocr.classification(variant))
+        if len(digits) == 5:
+            return digits
+    return ""
+
+
 def check_single_boid(boid: str, company_id: int) -> str:
     if not boid.isdigit() or len(boid) != BOID_LENGTH:
         return f"Invalid BOID (expected {BOID_LENGTH} digits)."
 
     ocr = get_ocr()
 
-    for _ in range(1, MAX_CAPTCHA_ATTEMPTS + 1):
+    for _ in range(1, MAX_CAPTCHA_FETCHES + 1):
         body = fetch_data()
         if body is None:
             time.sleep(RETRY_DELAY_SECONDS)
@@ -117,8 +165,8 @@ def check_single_boid(boid: str, company_id: int) -> str:
             time.sleep(RETRY_DELAY_SECONDS)
             continue
 
-        digits = re.sub(r"\D", "", ocr.classification(image_bytes))
-        if len(digits) != 5:
+        digits = _extract_captcha_digits(ocr, image_bytes)
+        if not digits:
             time.sleep(RETRY_DELAY_SECONDS)
             continue
 

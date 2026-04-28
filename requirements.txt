@@ -1,5 +1,6 @@
 Flask>=3.0,<4.0
 requests>=2.31
 ddddocr>=1.5
+pillow>=10.0
 waitress>=3.0
 gunicorn>=22.0
