@@ -78,6 +78,16 @@ def _find_browser() -> str:
         if os.path.isfile(env_path):
             return env_path
         raise RuntimeError(f"BROWSER_PATH={env_path!r} does not exist.")
+
+    try:
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as pw:
+            pw_path = pw.chromium.executable_path
+            if os.path.isfile(pw_path):
+                return pw_path
+    except Exception:
+        pass
+
     for name in _BROWSER_NAMES:
         path = shutil.which(name)
         if path:
