@@ -7,4 +7,4 @@ services:
       - key: IPO_WEB_SECRET
         generateValue: true
       - key: BROWSER_HEADLESS
-        value: "1"
+        value: "0"
