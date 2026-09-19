@@ -11,11 +11,10 @@ RUN playwright install chromium
 # Copy the rest of the application
 COPY . .
 
-# Ensure the correct port is exposed for Render
-EXPOSE 10000
+RUN apt-get update && apt-get install -y xvfb && rm -rf /var/lib/apt/lists/*
 
 # Set environment variables for the application
-ENV BROWSER_HEADLESS=1
+ENV BROWSER_HEADLESS=0
 ENV PORT=10000
 
-CMD ["sh", "-c", "gunicorn --timeout 120 --bind 0.0.0.0:${PORT:-10000} wsgi:app"]
+CMD ["sh", "-c", "xvfb-run -a gunicorn --timeout 120 --bind 0.0.0.0:${PORT:-10000} wsgi:app"]
