@@ -37,7 +37,7 @@ _API_CHECK = "/result/result/check"
 # ---------------------------------------------------------------------------
 # Tuning constants
 # ---------------------------------------------------------------------------
-MAX_CAPTCHA_FETCHES = 15
+MAX_CAPTCHA_FETCHES = 4
 CAPTCHA_OCR_VARIANTS = 4
 RETRY_DELAY_SECONDS = 0.1
 BOID_LENGTH = 16
@@ -255,22 +255,20 @@ class _BrowserBridge:
         # Solve the F5 Shape Security JavaScript challenge
         self._page.goto(
             _CDSC_ORIGIN + "/",
-            wait_until="networkidle",
-            timeout=45_000,
+            wait_until="domcontentloaded",
+            timeout=25_000,
         )
         self._page.wait_for_timeout(self._CHALLENGE_WAIT_MS)
-        self._page.wait_for_load_state("domcontentloaded")
 
         title = self._page.title() or ""
         if "Request Rejected" in title:
             logger.warning("F5 challenge failed on first load, retrying…")
             self._page.goto(
                 _CDSC_ORIGIN + "/",
-                wait_until="networkidle",
-                timeout=45_000,
+                wait_until="domcontentloaded",
+                timeout=25_000,
             )
             self._page.wait_for_timeout(self._CHALLENGE_WAIT_MS)
-            self._page.wait_for_load_state("domcontentloaded")
             title = self._page.title() or ""
 
         if "Request Rejected" in title:
@@ -344,6 +342,21 @@ class _BrowserBridge:
 
 _bridge = _BrowserBridge()
 atexit.register(_bridge.shutdown)
+
+
+def _warmup_worker() -> None:
+    import threading
+    time.sleep(2)  # Give gunicorn a moment to bind port
+    try:
+        logger.info("Pre-warming CDSC browser in background…")
+        _bridge._ensure_ready()
+        logger.info("CDSC browser successfully warmed up and ready!")
+    except Exception as e:
+        logger.warning("Background browser warm-up failed: %s", e)
+
+
+import threading
+threading.Thread(target=_warmup_worker, daemon=True).start()
 
 
 # ---------------------------------------------------------------------------
