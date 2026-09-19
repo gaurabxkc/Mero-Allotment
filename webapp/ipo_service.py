@@ -194,6 +194,7 @@ class _BrowserBridge:
             "--no-sandbox",
             "--disable-setuid-sandbox",
             "--disable-dev-shm-usage",
+            "--disable-gpu",
             f"--user-data-dir={self._profile_dir}",
             "about:blank",
         ]
@@ -209,13 +210,18 @@ class _BrowserBridge:
         self._proc = subprocess.Popen(
             args,
             stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            preexec_fn=os.setsid,
         )
 
         if not _wait_for_port(self._cdp_port):
+            err_output = ""
+            if self._proc and self._proc.poll() is not None:
+                err_bytes = self._proc.stderr.read()
+                err_output = err_bytes.decode(errors="ignore") if err_bytes else "No output"
             raise RuntimeError(
                 f"Browser did not open CDP port {self._cdp_port} in time. "
-                "Make sure the port is free and the browser is installed."
+                f"Make sure the port is free and the browser is installed. | Browser Crash Log: {err_output}"
             )
 
         from playwright.sync_api import sync_playwright
