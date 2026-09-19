@@ -68,8 +68,8 @@ def parse_check_payload(
 def run_check(company_id: int, item: dict[str, str]) -> dict[str, str]:
     try:
         outcome = check_single_boid(item["boid"], company_id)
-    except Exception:
-        outcome = "Result check failed due to a server error. Please try again."
+    except Exception as e:
+        outcome = f"Server error: {str(e)}"
     return {"label": item["label"], "boid": item["boid"], "result": outcome}
 
 
