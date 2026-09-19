@@ -18,4 +18,4 @@ EXPOSE 10000
 ENV BROWSER_HEADLESS=1
 ENV PORT=10000
 
-CMD ["gunicorn", "--timeout", "120", "--bind", "0.0.0.0:10000", "wsgi:app"]
+CMD ["sh", "-c", "gunicorn --timeout 120 --bind 0.0.0.0:${PORT:-10000} wsgi:app"]
