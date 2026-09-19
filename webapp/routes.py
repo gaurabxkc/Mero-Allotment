@@ -100,14 +100,8 @@ def api_check_post():
         return jsonify({"error": error}), 400
 
     if valid_items:
-        with ThreadPoolExecutor(
-            max_workers=min(MAX_CHECK_WORKERS, len(valid_items))
-        ) as executor:
-            futures = [
-                executor.submit(run_check, company_id, item) for item in valid_items
-            ]
-            for future in as_completed(futures):
-                results.append(future.result())
+        for item in valid_items:
+            results.append(run_check(company_id, item))
 
     if not results:
         return jsonify({"error": "No valid BOIDs were provided."}), 400
@@ -131,15 +125,9 @@ def api_check_stream():
             yield json.dumps({"type": "result", "item": item}) + "\n"
 
         if valid_items:
-            with ThreadPoolExecutor(
-                max_workers=min(MAX_CHECK_WORKERS, len(valid_items))
-            ) as executor:
-                futures = [
-                    executor.submit(run_check, company_id, item) for item in valid_items
-                ]
-                for future in as_completed(futures):
-                    emitted += 1
-                    yield json.dumps({"type": "result", "item": future.result()}) + "\n"
+            for item in valid_items:
+                emitted += 1
+                yield json.dumps({"type": "result", "item": run_check(company_id, item)}) + "\n"
 
         if emitted == 0:
             yield json.dumps({"error": "No valid BOIDs were provided."}) + "\n"
