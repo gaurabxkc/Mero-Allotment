@@ -78,6 +78,16 @@ def index():
     companies = get_companies()
     return render_template("index.html", companies=companies)
 
+@bp.route("/debug", methods=["GET"])
+def debug_route():
+    from .ipo_service import _bridge, _API_DATA
+    try:
+        raw = _bridge.api_get(_API_DATA)
+        return jsonify({"success": True, "raw": raw})
+    except Exception as e:
+        import traceback
+        return jsonify({"success": False, "error": str(e), "trace": traceback.format_exc()})
+
 
 @bp.route("/check", methods=["GET", "POST"])
 @bp.route("/boids", methods=["GET", "POST"])
