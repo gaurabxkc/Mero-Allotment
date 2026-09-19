@@ -8,5 +8,5 @@ export DISPLAY=:99
 # Give Xvfb half a second to initialize display socket
 sleep 1
 
-# Start Gunicorn directly so it binds to Render's dynamic $PORT
-exec gunicorn --timeout 120 --bind 0.0.0.0:${PORT:-10000} wsgi:app
+# Start Gunicorn with 1 worker to prevent CDP port conflicts and share memory cache
+exec gunicorn --workers 1 --threads 4 --timeout 120 --bind 0.0.0.0:${PORT:-10000} wsgi:app

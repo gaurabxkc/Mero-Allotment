@@ -40,13 +40,27 @@ MAX_CAPTCHA_FETCHES = 15
 CAPTCHA_OCR_VARIANTS = 4
 RETRY_DELAY_SECONDS = 0.1
 BOID_LENGTH = 16
-COMPANY_CACHE_TTL_SECONDS = 120
+COMPANY_CACHE_TTL_SECONDS = 86400  # 24 hours
+
+
+def _load_initial_companies() -> list[dict[str, str | int]]:
+    fallback_path = os.path.join(os.path.dirname(__file__), "companies_fallback.json")
+    try:
+        if os.path.exists(fallback_path):
+            with open(fallback_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, list) and data:
+                    return data
+    except Exception:
+        pass
+    return []
+
 
 # ---------------------------------------------------------------------------
 # Company cache
 # ---------------------------------------------------------------------------
-_company_cache: list[dict[str, str | int]] = []
-_company_cache_at = 0.0
+_company_cache: list[dict[str, str | int]] = _load_initial_companies()
+_company_cache_at = time.time() if _company_cache else 0.0
 _company_cache_lock = Lock()
 
 # ---------------------------------------------------------------------------
@@ -351,7 +365,7 @@ def fetch_data() -> dict | None:
 
 
 def get_companies() -> list[dict[str, str | int]]:
-    """Return the list of IPO companies (cached for 2 minutes)."""
+    """Return the list of IPO companies (cached for 24 hours)."""
     global _company_cache_at
     now = time.time()
     with _company_cache_lock:
@@ -359,16 +373,15 @@ def get_companies() -> list[dict[str, str | int]]:
             return list(_company_cache)
 
     body = fetch_data()
-    if not body:
-        with _company_cache_lock:
-            return list(_company_cache)
+    if body:
+        companies = body.get("companyShareList", [])
+        if companies:
+            with _company_cache_lock:
+                _company_cache[:] = companies
+                _company_cache_at = now
 
-    companies = body.get("companyShareList", [])
     with _company_cache_lock:
-        _company_cache[:] = companies
-        _company_cache_at = now
-
-    return list(companies)
+        return list(_company_cache)
 
 
 # ---------------------------------------------------------------------------
