@@ -191,6 +191,9 @@ class _BrowserBridge:
             "--disable-background-networking",
             "--disable-sync",
             "--disable-extensions",
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
             f"--user-data-dir={self._profile_dir}",
             "about:blank",
         ]
